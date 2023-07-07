@@ -77,35 +77,35 @@ class FaceOutlinePainter extends CustomPainter {
 
 
 
-    var xy = 0.1 * pixelPerMillivolt;
+    var latticePixels = 0.1 * pixelPerMillivolt;
     var nn = 0.0;
 
-    var km = 0;
+    var step = 0;
     do {
-      nn = km * xy;
+      nn = step * latticePixels;
       canvas.drawLine(Offset(nn, 0), Offset(nn, size.height), bgPaint2);
-      km++;
+      step++;
     } while (nn <= size.width);
 
-    km = 0;
+    step = 0;
     do {
-      nn = km * xy;
+      nn = step * latticePixels;
       canvas.drawLine(Offset(0, nn), Offset(size.width, nn), bgPaint2);
-      km++;
+      step++;
     } while (nn <= size.height);
 
-    km=0;
+    step=0;
     do {
-      nn = km * xy;
+      nn = step * latticePixels;
       canvas.drawLine(Offset(nn, 0), Offset(nn, size.height), bgPaint1);
-      km+=5;
+      step+=5;
     } while (nn <= size.width);
 
-    km=0;
+    step=0;
     do {
-      nn = km * xy;
+      nn = step * latticePixels;
       canvas.drawLine(Offset(0, nn), Offset(size.width, nn), bgPaint1);
-      km+=5;
+      step+=5;
     } while (nn <= size.height);
 
 
