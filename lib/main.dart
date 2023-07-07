@@ -65,11 +65,54 @@ class MyApp extends StatelessWidget {
 class FaceOutlinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Define a paint object
-    final paint = Paint()
+    final bgPaint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Colors.black;
+      ..color = Color.fromRGBO(0xff, 0x00, 0x00,0.3);
+
+    final bgPaint2 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..color = Color.fromRGBO(0xff, 0x00, 0x00,0.101);
+
+
+
+    var xy = 0.1 * pixelPerMillivolt;
+    var nn = 0.0;
+
+    var km = 0;
+    do {
+      nn = km * xy;
+      canvas.drawLine(Offset(nn, 0), Offset(nn, size.height), bgPaint2);
+      km++;
+    } while (nn <= size.width);
+
+    km = 0;
+    do {
+      nn = km * xy;
+      canvas.drawLine(Offset(0, nn), Offset(size.width, nn), bgPaint2);
+      km++;
+    } while (nn <= size.height);
+
+    km=0;
+    do {
+      nn = km * xy;
+      canvas.drawLine(Offset(nn, 0), Offset(nn, size.height), bgPaint1);
+      km+=5;
+    } while (nn <= size.width);
+
+    km=0;
+    do {
+      nn = km * xy;
+      canvas.drawLine(Offset(0, nn), Offset(size.width, nn), bgPaint1);
+      km+=5;
+    } while (nn <= size.height);
+
+
+    final wavePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..color = Color.fromRGBO(0x24, 0x2A, 0x38,1);
 
     print("fileData.length: ${fileData.length}");
     DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
@@ -92,7 +135,7 @@ class FaceOutlinePainter extends CustomPainter {
           var baseH = k*pixelPerMillivolt*rangeSpan+pixelPerMillivolt*rangeSpan/2.0;
           var y1 = baseH-duoEkFile.waveDataDouble[index]*pixelPerMillivolt;
           var y2 = baseH-duoEkFile.waveDataDouble[index+1]*pixelPerMillivolt;
-          canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), paint);
+          canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), wavePaint);
         }
       }
     }
