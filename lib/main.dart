@@ -1,9 +1,22 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+late Uint8List fileData;
 
-void main() {
+Future<void> readFile() async {
+  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
+  File file = File(path);
+  fileData=await file.readAsBytes();
   runApp(MyApp());
+}
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  readFile();
+
 }
 
 class MyApp extends StatelessWidget {
@@ -17,12 +30,10 @@ class MyApp extends StatelessWidget {
         body: Container(
           color: Colors.white,
           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-          // Inner yellow container
           child: Container(
-            // pass double.infinity to prevent shrinking of the painter area to 0.
             width: double.infinity,
             height: double.infinity,
-            color: Colors.yellow,
+            color: Colors.white,
             child: CustomPaint(painter: FaceOutlinePainter()),
           ),
         ),
@@ -31,38 +42,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+
 class FaceOutlinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Define a paint object
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..color = Colors.indigo;
+      ..strokeWidth = 2.0
+      ..color = Colors.black;
 
-    // Left eye
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-          Rect.fromLTWH(20, 40, 100, 100), Radius.circular(20)),
-      paint,
-    );
-    // Right eye
-    canvas.drawOval(
-      Rect.fromLTWH(size.width - 120, 40, 100, 100),
-      paint,
-    );
-    // Mouth
+    print("fileData.length: ${fileData.length}");
     final mouth = Path();
     mouth.moveTo(size.width * 0.8, size.height * 0.6);
-    mouth.arcToPoint(
-      Offset(size.width * 0.2, size.height * 0.6),
-      radius: Radius.circular(150),
-    );
-    mouth.arcToPoint(
-      Offset(size.width * 0.8, size.height * 0.6),
-      radius: Radius.circular(200),
-      clockwise: false,
-    );
+    mouth.lineTo(200, 300);
     canvas.drawPath(mouth, paint);
   }
 
