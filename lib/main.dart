@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
+import 'duoek_constant.dart';
 import 'duoek_file.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
@@ -16,9 +17,7 @@ Future<void> readFile() async {
   fileData=await file.readAsBytes();
   DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
   duoEkFile.uncompress();
-  var lineSize = 831;
-  var rangeSpan=3;
-  var pixelPerMillivolt=74.283167;
+
   var pointSize = duoEkFile.waveDataDouble.length;
   var totalHigh=0.0;
   if(pointSize%lineSize==0) {
@@ -75,11 +74,7 @@ class FaceOutlinePainter extends CustomPainter {
     print("fileData.length: ${fileData.length}");
     DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
     duoEkFile.uncompress();
-    var lineSize = 831;
-    //一行波形值域的mv跨度
-    var rangeSpan=3;
-    //每mv的像素点数
-    var pixelPerMillivolt=74.283167;
+
     var pointSize = duoEkFile.waveDataDouble.length;
     var totalHighNumber =0;
     if(pointSize%lineSize==0) {
