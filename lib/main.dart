@@ -33,14 +33,12 @@ class MyApp extends StatelessWidget {
           color: Colors.white,
           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 3,
-                  width: MediaQuery.of(context).size.width,
-                  child: CustomPaint(painter: FaceOutlinePainter()),
-                ),
-              ],
+            child: RepaintBoundary(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 3,
+                width: MediaQuery.of(context).size.width,
+                child: CustomPaint(painter: FaceOutlinePainter()),
+              ),
             ),
           ),
         ),
