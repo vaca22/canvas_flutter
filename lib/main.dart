@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -6,6 +7,9 @@ import 'dart:io';
 
 import 'duoek_constant.dart';
 import 'duoek_file.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
@@ -28,6 +32,8 @@ Future<void> readFile() async {
   canvasHigh=totalHigh;
   runApp(MyApp());
 }
+
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   readFile();
@@ -67,10 +73,14 @@ class MyApp extends StatelessWidget {
 class FaceOutlinePainter extends CustomPainter {
 
 
-  @override
-  void paint(Canvas canvas, Size size) {
+  void drawEcg(Canvas canvas, Size size){
+    //fill canvas with white color
+    final bgPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white;
+    canvas.drawRect(Offset.zero & size, bgPaint);
 
-    //drawBackgroundLattice
+
     final bgPaint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
@@ -145,7 +155,26 @@ class FaceOutlinePainter extends CustomPainter {
         }
       }
     }
+  }
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    final recorder = new PictureRecorder();
+    final recordCanvas = new Canvas(recorder,Rect.fromLTWH(0, 0, size.width, size.height));
+
+    drawEcg(recordCanvas,size);
+    drawEcg(canvas, size);
+
+
+    final picture = recorder.endRecording();
+    final img = picture.toImage((rangeWidthSpan*pixelPerMillivolt).toInt(),canvasHigh.toInt());
+    img.then((value) => {
+      value.toByteData(format: ImageByteFormat.png).then((value) => {
+        print("value.lengthInBytes: ${value!.lengthInBytes}"),
+        fileData=value.buffer.asUint8List(),
+        File("/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.png").writeAsBytes(fileData),
+      }),
+    });
     // final mouth = Path();
     // mouth.moveTo(size.width * 0.8, size.height * 0.6);
     // mouth.lineTo(200, 300);
