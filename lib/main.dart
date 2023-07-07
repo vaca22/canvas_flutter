@@ -21,9 +21,9 @@ Future<void> readFile() async {
   var pointSize = duoEkFile.waveDataDouble.length;
   var totalHigh=0.0;
   if(pointSize%lineSize==0) {
-    totalHigh = pointSize ~/ lineSize * rangeSpan * pixelPerMillivolt;
+    totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
   }else{
-    totalHigh = (pointSize ~/ lineSize+1) * rangeSpan * pixelPerMillivolt;
+    totalHigh = (pointSize ~/ lineSize+1) * rangeHeightSpan * pixelPerMillivolt;
   }
   canvasHigh=totalHigh;
   runApp(MyApp());
@@ -47,10 +47,12 @@ class MyApp extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 40),
           child: SingleChildScrollView(
             child: RepaintBoundary(
-              child: SizedBox(
-                height: canvasHigh,
-                width: MediaQuery.of(context).size.width,
-                child: CustomPaint(painter: FaceOutlinePainter()),
+              child: Center(
+                child: SizedBox(
+                  height: canvasHigh,
+                  width: rangeWidthSpan * pixelPerMillivolt,
+                  child: CustomPaint(painter: FaceOutlinePainter()),
+                ),
               ),
             ),
           ),
@@ -63,8 +65,12 @@ class MyApp extends StatelessWidget {
 
 
 class FaceOutlinePainter extends CustomPainter {
+
+
   @override
   void paint(Canvas canvas, Size size) {
+
+    //drawBackgroundLattice
     final bgPaint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
@@ -74,8 +80,6 @@ class FaceOutlinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
       ..color = Color.fromRGBO(0xff, 0x00, 0x00,0.101);
-
-
 
     var latticePixels = 0.1 * pixelPerMillivolt;
     var nn = 0.0;
@@ -109,6 +113,8 @@ class FaceOutlinePainter extends CustomPainter {
     } while (nn <= size.height);
 
 
+    //drawWave
+
     final wavePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
@@ -132,7 +138,7 @@ class FaceOutlinePainter extends CustomPainter {
       for(int j=0;j<lineSize;j++){
         var index = k*lineSize+j;
         if(index<duoEkFile.waveDataDouble.length-1){
-          var baseH = k*pixelPerMillivolt*rangeSpan+pixelPerMillivolt*rangeSpan/2.0;
+          var baseH = k*pixelPerMillivolt*rangeHeightSpan+pixelPerMillivolt*rangeHeightSpan/2.0;
           var y1 = baseH-duoEkFile.waveDataDouble[index]*pixelPerMillivolt;
           var y2 = baseH-duoEkFile.waveDataDouble[index+1]*pixelPerMillivolt;
           canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), wavePaint);
