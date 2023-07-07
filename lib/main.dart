@@ -8,11 +8,25 @@ import 'duoek_file.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
+var canvasHigh=0.0;
 
 Future<void> readFile() async {
   var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
   File file = File(path);
   fileData=await file.readAsBytes();
+  DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
+  duoEkFile.uncompress();
+  var lineSize = 831;
+  var rangeSpan=3;
+  var pixelPerMillivolt=74.283167;
+  var pointSize = duoEkFile.waveDataDouble.length;
+  var totalHigh=0.0;
+  if(pointSize%lineSize==0) {
+    totalHigh = pointSize ~/ lineSize * rangeSpan * pixelPerMillivolt;
+  }else{
+    totalHigh = (pointSize ~/ lineSize+1) * rangeSpan * pixelPerMillivolt;
+  }
+  canvasHigh=totalHigh;
   runApp(MyApp());
 }
 void main() {
@@ -35,7 +49,7 @@ class MyApp extends StatelessWidget {
           child: SingleChildScrollView(
             child: RepaintBoundary(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 3,
+                height: canvasHigh,
                 width: MediaQuery.of(context).size.width,
                 child: CustomPaint(painter: FaceOutlinePainter()),
               ),
@@ -62,17 +76,16 @@ class FaceOutlinePainter extends CustomPainter {
     DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
     duoEkFile.uncompress();
     var lineSize = 831;
-    var hhh=3;
-    var co=74.283167;
+    //一行波形值域的mv跨度
+    var rangeSpan=3;
+    //每mv的像素点数
+    var pixelPerMillivolt=74.283167;
     var pointSize = duoEkFile.waveDataDouble.length;
     var totalHighNumber =0;
-    var totalHigh=0.0;
     if(pointSize%lineSize==0) {
       totalHighNumber = pointSize ~/ lineSize;
-      totalHigh = pointSize / lineSize * hhh * co;
     }else{
       totalHighNumber = pointSize ~/ lineSize+1;
-      totalHigh = (pointSize / lineSize+1) * hhh * co;
     }
 
 
@@ -81,10 +94,10 @@ class FaceOutlinePainter extends CustomPainter {
       for(int j=0;j<lineSize;j++){
         var index = k*lineSize+j;
         if(index<duoEkFile.waveDataDouble.length-1){
-          var baseH = k*co*hhh+co*hhh/2.0;
-          var a = baseH-duoEkFile.waveDataDouble[index]*co;
-          var a2 = baseH-duoEkFile.waveDataDouble[index+1]*co;
-          canvas.drawLine(Offset(j.toDouble()*nv,a), Offset((j+1).toDouble()*nv,a2), paint);
+          var baseH = k*pixelPerMillivolt*rangeSpan+pixelPerMillivolt*rangeSpan/2.0;
+          var y1 = baseH-duoEkFile.waveDataDouble[index]*pixelPerMillivolt;
+          var y2 = baseH-duoEkFile.waveDataDouble[index+1]*pixelPerMillivolt;
+          canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), paint);
         }
       }
     }
