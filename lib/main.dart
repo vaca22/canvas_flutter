@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         // Outer white container with padding
         body: Container(
           color: Colors.white,
-          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 40),
           child: SingleChildScrollView(
             child: RepaintBoundary(
               child: SizedBox(
