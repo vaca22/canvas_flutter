@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-import 'duoek_constant.dart';
+import 'checkme_pro_file.dart';
+import 'checkmepro_constant.dart';
 import 'duoek_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -16,13 +17,15 @@ late Uint8List fileData;
 var canvasHigh=0.0;
 
 Future<void> readFile() async {
-  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
+  //20230625170510  checkme pro
+  // var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
+  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230625170510";
   File file = File(path);
   fileData=await file.readAsBytes();
-  DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
-  duoEkFile.uncompress();
+  CheckmeProFile checkmeProFile=CheckmeProFile(originalData: fileData);
+  checkmeProFile.uncompress();
 
-  var pointSize = duoEkFile.waveDataDouble.length;
+  var pointSize = checkmeProFile.waveData.length;
   var totalHigh=0.0;
   if(pointSize%lineSize==0) {
     totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
@@ -131,10 +134,10 @@ class FaceOutlinePainter extends CustomPainter {
       ..color = Color.fromRGBO(0x24, 0x2A, 0x38,1);
 
     print("fileData.length: ${fileData.length}");
-    DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
+    CheckmeProFile duoEkFile = CheckmeProFile(originalData: fileData);
     duoEkFile.uncompress();
 
-    var pointSize = duoEkFile.waveDataDouble.length;
+    var pointSize = duoEkFile.waveData.length;
     var totalHighNumber =0;
     if(pointSize%lineSize==0) {
       totalHighNumber = pointSize ~/ lineSize;
@@ -147,11 +150,16 @@ class FaceOutlinePainter extends CustomPainter {
     for(int k=0;k<totalHighNumber;k++){
       for(int j=0;j<lineSize;j++){
         var index = k*lineSize+j;
-        if(index<duoEkFile.waveDataDouble.length-1){
+        if(index<duoEkFile.waveData.length-1){
           var baseH = k*pixelPerMillivolt*rangeHeightSpan+pixelPerMillivolt*rangeHeightSpan/2.0;
-          var y1 = baseH-duoEkFile.waveDataDouble[index]*pixelPerMillivolt;
-          var y2 = baseH-duoEkFile.waveDataDouble[index+1]*pixelPerMillivolt;
-          canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), wavePaint);
+          var y1 = baseH-duoEkFile.waveData[index]*pixelPerMillivolt;
+          var y2 = baseH-duoEkFile.waveData[index+1]*pixelPerMillivolt;
+          try{
+            canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), wavePaint);
+          }catch(e){
+            print("e: $e");
+          }
+
         }
       }
     }
@@ -159,22 +167,22 @@ class FaceOutlinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final recorder = new PictureRecorder();
-    final recordCanvas = new Canvas(recorder,Rect.fromLTWH(0, 0, size.width, size.height));
+    // final recorder = new PictureRecorder();
+    // final recordCanvas = new Canvas(recorder,Rect.fromLTWH(0, 0, size.width, size.height));
 
-    drawEcg(recordCanvas,size);
+    // drawEcg(recordCanvas,size);
     drawEcg(canvas, size);
 
 
-    final picture = recorder.endRecording();
-    final img = picture.toImage((rangeWidthSpan*pixelPerMillivolt).toInt(),canvasHigh.toInt());
-    img.then((value) => {
-      value.toByteData(format: ImageByteFormat.png).then((value) => {
-        print("value.lengthInBytes: ${value!.lengthInBytes}"),
-        fileData=value.buffer.asUint8List(),
-        File("/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.png").writeAsBytes(fileData),
-      }),
-    });
+    // final picture = recorder.endRecording();
+    // final img = picture.toImage((rangeWidthSpan*pixelPerMillivolt).toInt(),canvasHigh.toInt());
+    // img.then((value) => {
+    //   value.toByteData(format: ImageByteFormat.png).then((value) => {
+    //     print("value.lengthInBytes: ${value!.lengthInBytes}"),
+    //     fileData=value.buffer.asUint8List(),
+    //     File("/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.png").writeAsBytes(fileData),
+    //   }),
+    // });
     // final mouth = Path();
     // mouth.moveTo(size.width * 0.8, size.height * 0.6);
     // mouth.lineTo(200, 300);
