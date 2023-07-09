@@ -11,6 +11,7 @@ import 'bp2_constant.dart';
 import 'duoek_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:plugin_filtering/plugin_filtering.dart' as cam;
 
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
@@ -39,6 +40,7 @@ Future<void> readFile() async {
 
 
 void main() {
+  cam.initializeApiDL();
   WidgetsFlutterBinding.ensureInitialized();
   readFile();
 

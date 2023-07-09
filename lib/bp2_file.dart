@@ -1,7 +1,8 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-
+import 'package:plugin_filtering/plugin_filtering.dart' as cam;
 
 class Bp2File {
 
@@ -28,10 +29,23 @@ class Bp2File {
     int dataPos=48 ;
     var dataLength=originalData.length-48;
     print(originalData.length);
+    List<int> temp = [];
     for(int i=0;i<dataLength;i+=2){
       int temp1=((originalData[dataPos+i]) + (originalData[dataPos+i+1] << 8)).toSigned(16);
-      waveData.add(0.003098*temp1);
+      temp.add(temp1);
+      // waveData.add(0.003098*temp1);
     }
+
+    cam.shortFilter(temp,temp.length,(message) {
+      var array=message as Int16List;
+      print(array.length);
+      var k;
+      for(k in array){
+        waveData.add(0.003098*k);
+      }
+    });
+
+
   }
 
 
