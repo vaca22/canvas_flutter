@@ -130,7 +130,7 @@ class FaceOutlinePainter extends CustomPainter {
 
     final wavePaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
+      ..strokeWidth = 1.0
       ..color = Color.fromRGBO(0x24, 0x2A, 0x38,1);
 
     print("fileData.length: ${fileData.length}");
