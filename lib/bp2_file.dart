@@ -36,12 +36,9 @@ class Bp2File {
       // waveData.add(0.003098*temp1);
     }
 
-    cam.shortFilter(temp,temp.length,(message) {
-      var array=message as Int16List;
-      print(array.length);
-      var k;
-      for(k in array){
-        waveData.add(0.003098*k);
+    cam.shortFilter(temp,temp.length, (List<int> list, int size) {
+      for(int i=0;i<size;i++){
+        waveData.add(short2mv(list[i]));
       }
     });
 

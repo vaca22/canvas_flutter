@@ -21,8 +21,10 @@
 extern "C" {
 #endif
 
+
+typedef void (*callback)(short *shortArray, int arraySize);
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data);
-FFI_PLUGIN_EXPORT void shortfilter(short *shortArray, int arraySize,Dart_Port_DL filter_result_port ) ;
+FFI_PLUGIN_EXPORT void shortfilter(short *shortArray, int arraySize,callback cb ) ;
 #ifdef __cplusplus
 };
 #endif

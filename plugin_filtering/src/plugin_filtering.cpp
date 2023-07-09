@@ -16,7 +16,7 @@
 #include <vector>
 
 
-FFI_PLUGIN_EXPORT void shortfilter(short *shortArray, int arraySize,Dart_Port_DL filter_result_port ) {
+FFI_PLUGIN_EXPORT void shortfilter(short *shortArray, int arraySize,callback cb )  {
     deque<double> inputt;
     deque<double> realInput;
 
@@ -119,12 +119,7 @@ FFI_PLUGIN_EXPORT void shortfilter(short *shortArray, int arraySize,Dart_Port_DL
 
     int  size =  allSig.size();
 
-    Dart_CObject dart_cObject;
-    dart_cObject.type = Dart_CObject_kTypedData;
-    dart_cObject.value.as_typed_data.type = Dart_TypedData_kInt16;
-    dart_cObject.value.as_typed_data.values = (unsigned char *) array;
-    dart_cObject.value.as_typed_data.length = size;
-    Dart_PostCObject_DL(filter_result_port, &dart_cObject);
+    cb(array,size);
 }
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data) {
   return Dart_InitializeApiDL(data);

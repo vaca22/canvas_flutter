@@ -26,25 +26,6 @@ class PluginFilteringBindings {
           lookup)
       : _lookup = lookup;
 
-  void shortfilter(
-    ffi.Pointer<ffi.Short> shortArray,
-    int arraySize,
-    int filter_result_port,
-  ) {
-    return _shortfilter(
-      shortArray,
-      arraySize,
-      filter_result_port,
-    );
-  }
-
-  late final _shortfilterPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Short>, ffi.Int, Dart_Port_DL)>>('shortfilter');
-  late final _shortfilter = _shortfilterPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Short>, int, int)>();
-
   int ffi_Dart_InitializeApiDL(
     ffi.Pointer<ffi.Void> data,
   ) {
@@ -58,17 +39,26 @@ class PluginFilteringBindings {
           'ffi_Dart_InitializeApiDL');
   late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  void shortfilter(
+    ffi.Pointer<ffi.Short> shortArray,
+    int arraySize,
+    callback cb,
+  ) {
+    return _shortfilter(
+      shortArray,
+      arraySize,
+      cb,
+    );
+  }
+
+  late final _shortfilterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Short>, ffi.Int, callback)>>('shortfilter');
+  late final _shortfilter = _shortfilterPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Short>, int, callback)>();
 }
 
-/// ============================================================================
-/// IMPORTANT! Never update these signatures without properly updating
-/// DART_API_DL_MAJOR_VERSION and DART_API_DL_MINOR_VERSION.
-///
-/// Verbatim copy of `dart_native_api.h` and `dart_api.h` symbol names and types
-/// to trigger compile-time errors if the symbols in those files are updated
-/// without updating these.
-///
-/// Function return and argument types, and typedefs are carbon copied. Structs
-/// are typechecked nominally in C/C++, so they are not copied, instead a
-/// comment is added to their definition.
-typedef Dart_Port_DL = ffi.Int64;
+typedef callback = ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Short>, ffi.Int)>>;
