@@ -19,7 +19,7 @@ var canvasHigh=0.0;
 Future<void> readFile() async {
   //20230625170510  checkme pro
   // var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
-  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230625170510";
+  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230625093917";
   File file = File(path);
   fileData=await file.readAsBytes();
   CheckmeProFile checkmeProFile=CheckmeProFile(originalData: fileData);
