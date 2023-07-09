@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
+import 'bp2_file.dart';
 import 'checkme_pro_file.dart';
-import 'checkmepro_constant.dart';
+import 'bp2_constant.dart';
 import 'duoek_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -19,10 +20,10 @@ var canvasHigh=0.0;
 Future<void> readFile() async {
   //20230625170510  checkme pro
   // var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
-  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230625093917";
+  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230709121347.dat";
   File file = File(path);
   fileData=await file.readAsBytes();
-  CheckmeProFile checkmeProFile=CheckmeProFile(originalData: fileData);
+  Bp2File checkmeProFile=Bp2File(originalData: fileData);
   checkmeProFile.uncompress();
 
   var pointSize = checkmeProFile.waveData.length;
@@ -134,7 +135,7 @@ class FaceOutlinePainter extends CustomPainter {
       ..color = Color.fromRGBO(0x24, 0x2A, 0x38,1);
 
     print("fileData.length: ${fileData.length}");
-    CheckmeProFile duoEkFile = CheckmeProFile(originalData: fileData);
+    Bp2File duoEkFile = Bp2File(originalData: fileData);
     duoEkFile.uncompress();
 
     var pointSize = duoEkFile.waveData.length;
