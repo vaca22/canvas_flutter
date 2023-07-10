@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 
+import '../ffi/plugin_filtering.dart';
 
 class DuoEkFile {
   var filterWaveDataLength = 0;
@@ -18,10 +19,10 @@ class DuoEkFile {
   final int UNCOM_RET_INVALI = -32768;
 
   final Uint8List originalData;
-   List<int> fileData=[];
-   List<int> unCompressData=[];
-   List<int> waveData=[];
-   List<double> waveDataDouble=[];
+  List<int> fileData = [];
+  List<int> unCompressData = [];
+
+  List<double> waveData = [];
 
   DuoEkFile({required this.originalData});
 
@@ -34,8 +35,7 @@ class DuoEkFile {
     unCompressNum = 0;
     lastCompressData = 0;
     fileData = originalData.map((e) => e.toSigned(8)).toList();
-    length=fileData.length-30;
-
+    length = fileData.length - 30;
   }
 
   int unCompressAlgECG(int compressData) {
@@ -82,10 +82,6 @@ class DuoEkFile {
     return ecgData;
   }
 
-  //    public static double short2mv(short s) {
-  //         return (s * (1.0035 * 1800) / (4096 * 178.74));
-  //     }
-
   double short2mv(int s) {
     return (s * (1.0035 * 1800) / (4096 * 178.74));
   }
@@ -93,27 +89,32 @@ class DuoEkFile {
   void uncompress() {
     init();
     var endNullValueCount = 0;
-    for(int i=0;i<length-30;i++){
-      int tmp=unCompressAlgECG(fileData[10+i]);
-      if(tmp!=-32768&&filterWaveDataLength<length){
+    for (int i = 0; i < length - 30; i++) {
+      int tmp = unCompressAlgECG(fileData[10 + i]);
+      if (tmp != -32768 && filterWaveDataLength < length) {
         unCompressData.add(tmp);
         filterWaveDataLength++;
       }
     }
 
-    for(int j=filterWaveDataLength-1;j>=0;j--){
-      if(unCompressData[j]==32767){
+    for (int j = filterWaveDataLength - 1; j >= 0; j--) {
+      if (unCompressData[j] == 32767) {
         endNullValueCount++;
-      }else{
+      } else {
         break;
       }
     }
-    filterWaveDataLength-=endNullValueCount;
-    waveData=unCompressData.sublist(0,filterWaveDataLength);
-    for(int i=0;i<filterWaveDataLength;i++){
-      waveDataDouble.add(short2mv(waveData[i]));
+    filterWaveDataLength -= endNullValueCount;
+
+    List<int> temp = [];
+    for (int i = 0; i < filterWaveDataLength; i++) {
+      temp.add(unCompressData[i]);
     }
+
+    shortFilter(temp, temp.length, (List<int> list, int size) {
+      for (int i = 0; i < size; i++) {
+        waveData.add(short2mv(list[i]));
+      }
+    });
   }
-
-
 }

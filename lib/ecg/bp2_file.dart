@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:canvas_flutter/plugin_filtering.dart' as cam;
 import 'package:flutter/foundation.dart';
+
+import '../ffi/plugin_filtering.dart';
 
 class Bp2File {
   final Uint8List originalData;
@@ -29,7 +30,7 @@ class Bp2File {
       // waveData.add(0.003098*temp1);
     }
 
-    cam.shortFilter(temp, temp.length, (List<int> list, int size) {
+    shortFilter(temp, temp.length, (List<int> list, int size) {
       for (int i = 0; i < size; i++) {
         waveData.add(short2mv(list[i]));
       }
