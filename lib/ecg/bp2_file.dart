@@ -25,7 +25,6 @@ class Bp2File {
           ((originalData[dataPos + i]) + (originalData[dataPos + i + 1] << 8))
               .toSigned(16);
       temp.add(temp1);
-      // waveData.add(0.003098*temp1);
     }
 
     shortFilter(temp, temp.length, (List<int> list, int size) {
