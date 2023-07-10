@@ -26,20 +26,6 @@ class PluginFilteringBindings {
           lookup)
       : _lookup = lookup;
 
-  int ffi_Dart_InitializeApiDL(
-    ffi.Pointer<ffi.Void> data,
-  ) {
-    return _ffi_Dart_InitializeApiDL(
-      data,
-    );
-  }
-
-  late final _ffi_Dart_InitializeApiDLPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Pointer<ffi.Void>)>>(
-          'ffi_Dart_InitializeApiDL');
-  late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-
   void shortfilter(
     ffi.Pointer<ffi.Short> shortArray,
     int arraySize,

@@ -1,49 +1,36 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'package:flutter/services.dart' show rootBundle;
 
-import 'bp2_file.dart';
-import 'checkme_pro_file.dart';
 import 'bp2_constant.dart';
-import 'duoek_file.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:plugin_filtering/plugin_filtering.dart' as cam;
-
+import 'bp2_file.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
-var canvasHigh=0.0;
+var canvasHigh = 0.0;
 
 Future<void> readFile() async {
-  //20230625170510  checkme pro
-  // var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/R20230707223659.dat";
-  var path = "/storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/20230709121347.dat";
-  File file = File(path);
-  fileData=await file.readAsBytes();
-  Bp2File checkmeProFile=Bp2File(originalData: fileData);
+  var path = "assets/20230709121347.dat";
+  fileData = (await rootBundle.load(path)).buffer.asUint8List();
+  Bp2File checkmeProFile = Bp2File(originalData: fileData);
   checkmeProFile.uncompress();
 
   var pointSize = checkmeProFile.waveData.length;
-  var totalHigh=0.0;
-  if(pointSize%lineSize==0) {
+  var totalHigh = 0.0;
+  if (pointSize % lineSize == 0) {
     totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
-  }else{
-    totalHigh = (pointSize ~/ lineSize+1) * rangeHeightSpan * pixelPerMillivolt;
+  } else {
+    totalHigh =
+        (pointSize ~/ lineSize + 1) * rangeHeightSpan * pixelPerMillivolt;
   }
-  canvasHigh=totalHigh;
+  canvasHigh = totalHigh;
   runApp(MyApp());
 }
 
-
 void main() {
-  cam.initializeApiDL();
   WidgetsFlutterBinding.ensureInitialized();
   readFile();
-
 }
 
 class MyApp extends StatelessWidget {
@@ -74,28 +61,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
 class FaceOutlinePainter extends CustomPainter {
-
-
-  void drawEcg(Canvas canvas, Size size){
+  void drawEcg(Canvas canvas, Size size) {
     //fill canvas with white color
     final bgPaint = Paint()
       ..style = PaintingStyle.fill
       ..color = Colors.white;
     canvas.drawRect(Offset.zero & size, bgPaint);
 
-
     final bgPaint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Color.fromRGBO(0xff, 0x00, 0x00,0.3);
+      ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.3);
 
     final bgPaint2 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Color.fromRGBO(0xff, 0x00, 0x00,0.101);
+      ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
 
     var latticePixels = 0.1 * pixelPerMillivolt;
     var nn = 0.0;
@@ -114,55 +96,54 @@ class FaceOutlinePainter extends CustomPainter {
       step++;
     } while (nn <= size.height);
 
-    step=0;
+    step = 0;
     do {
       nn = step * latticePixels;
       canvas.drawLine(Offset(nn, 0), Offset(nn, size.height), bgPaint1);
-      step+=5;
+      step += 5;
     } while (nn <= size.width);
 
-    step=0;
+    step = 0;
     do {
       nn = step * latticePixels;
       canvas.drawLine(Offset(0, nn), Offset(size.width, nn), bgPaint1);
-      step+=5;
+      step += 5;
     } while (nn <= size.height);
-
 
     //drawWave
 
     final wavePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Color.fromRGBO(0x24, 0x2A, 0x38,1);
+      ..color = Color.fromRGBO(0x24, 0x2A, 0x38, 1);
 
     print("fileData.length: ${fileData.length}");
     Bp2File duoEkFile = Bp2File(originalData: fileData);
     duoEkFile.uncompress();
 
     var pointSize = duoEkFile.waveData.length;
-    var totalHighNumber =0;
-    if(pointSize%lineSize==0) {
+    var totalHighNumber = 0;
+    if (pointSize % lineSize == 0) {
       totalHighNumber = pointSize ~/ lineSize;
-    }else{
-      totalHighNumber = pointSize ~/ lineSize+1;
+    } else {
+      totalHighNumber = pointSize ~/ lineSize + 1;
     }
 
-
-    var nv=size.width/lineSize;
-    for(int k=0;k<totalHighNumber;k++){
-      for(int j=0;j<lineSize;j++){
-        var index = k*lineSize+j;
-        if(index<duoEkFile.waveData.length-1){
-          var baseH = k*pixelPerMillivolt*rangeHeightSpan+pixelPerMillivolt*rangeHeightSpan/2.0;
-          var y1 = baseH-duoEkFile.waveData[index]*pixelPerMillivolt;
-          var y2 = baseH-duoEkFile.waveData[index+1]*pixelPerMillivolt;
-          try{
-            canvas.drawLine(Offset(j.toDouble()*nv,y1), Offset((j+1).toDouble()*nv,y2), wavePaint);
-          }catch(e){
+    var nv = size.width / lineSize;
+    for (int k = 0; k < totalHighNumber; k++) {
+      for (int j = 0; j < lineSize; j++) {
+        var index = k * lineSize + j;
+        if (index < duoEkFile.waveData.length - 1) {
+          var baseH = k * pixelPerMillivolt * rangeHeightSpan +
+              pixelPerMillivolt * rangeHeightSpan / 2.0;
+          var y1 = baseH - duoEkFile.waveData[index] * pixelPerMillivolt;
+          var y2 = baseH - duoEkFile.waveData[index + 1] * pixelPerMillivolt;
+          try {
+            canvas.drawLine(Offset(j.toDouble() * nv, y1),
+                Offset((j + 1).toDouble() * nv, y2), wavePaint);
+          } catch (e) {
             print("e: $e");
           }
-
         }
       }
     }
@@ -175,7 +156,6 @@ class FaceOutlinePainter extends CustomPainter {
 
     // drawEcg(recordCanvas,size);
     drawEcg(canvas, size);
-
 
     // final picture = recorder.endRecording();
     // final img = picture.toImage((rangeWidthSpan*pixelPerMillivolt).toInt(),canvasHigh.toInt());
