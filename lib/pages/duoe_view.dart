@@ -199,7 +199,7 @@ class FaceOutlinePainter extends CustomPainter {
     img.then((value) => {
           value.toByteData(format: ImageByteFormat.png).then((value) async => {
                 fileData = value!.buffer.asUint8List(),
-                dir = await getExternalStorageDirectory(),
+                dir = await getTemporaryDirectory(),
                 path = '${dir?.path}${Platform.pathSeparator}${name}.png',
                 File(path).writeAsBytes(fileData),
               }),

@@ -7,6 +7,6 @@ class CheckmeGlobal {
 
 //  1 mv  Corresponding grid
   static const rangeHeightSpan = 1;
-  static const rangeWidthSpan = 5;
+  static var rangeWidthSpan = 5;
   static const lineSize = eachLineTime * sampleRate;
 }
