@@ -1,16 +1,24 @@
-# canvas_flutter
+#ECG drawing program, including four devices, where checkmeList and checkmePro are the same
 
-A new Flutter project.
 
-## Getting Started
+The filter function currently only supports the android system
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The drawing parameters of the electrocardiogram are in the duoek_constant.dart, checkme_constant.dart, and bp2_constant.dart files respectively
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+```dart
+  static const pixelsPerMillivolt = 70.0;
+  static const sampleRate = 125;
+
+//each line Time consumed  (second)
+  static const eachLineTime = 4;
+
+//  1 mv  Corresponding grid
+  static const rangeHeightSpan = 3;
+  static const rangeWidthSpan = 5;
+  static const lineSize = eachLineTime * sampleRate;
+
+```
