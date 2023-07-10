@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'bp2_view.dart';
+import 'checkme_view.dart';
 import 'duoe_view.dart';
 
 class BaseFragment extends StatelessWidget {
@@ -32,7 +34,10 @@ class _MyBasePageState extends State<MyBasePage> {
 
   final List<Widget> _widgetOptions = <Widget>[
     DuoEkView(),
-    DuoEkView(),
+    // DuoEkView(),
+    // DuoEkView(),
+    CheckmeView(),
+    Bp2View(),
   ];
 
   late Function listener;
@@ -46,8 +51,10 @@ class _MyBasePageState extends State<MyBasePage> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "实时"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "设置"),
+          BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "DuoEk"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.dark_mode_rounded), label: "CheckMe"),
+          BottomNavigationBarItem(icon: Icon(Icons.face), label: "BP2"),
         ],
         currentIndex: _selectIndex,
         selectedItemColor: Colors.amber[800],

@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:canvas_flutter/ecg/checkme_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
-import '../ecg/duoek_constant.dart';
-import '../ecg/duoek_file.dart';
+import '../ecg/checkme_constant.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
@@ -15,12 +15,12 @@ var canvasHigh = 0.0;
 late Future initFile;
 
 void initVar() async {
-  var path = "assets/R20230707223659.dat";
+  var path = "assets/20230625093917";
   fileData = (await rootBundle.load(path)).buffer.asUint8List();
   print(fileData.length);
-  DuoEkFile duoekFile = DuoEkFile(originalData: fileData);
-  duoekFile.uncompress();
-  var pointSize = duoekFile.waveData.length;
+  CheckmeFile checkmeFile = CheckmeFile(originalData: fileData);
+  checkmeFile.uncompress();
+  var pointSize = checkmeFile.waveData.length;
   var totalHigh = 0.0;
   if (pointSize % lineSize == 0) {
     totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
@@ -35,7 +35,7 @@ void readFile() {
   initFile = Future(() => {initVar()});
 }
 
-class DuoEkView extends StatelessWidget {
+class CheckmeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     readFile();
@@ -97,12 +97,12 @@ class FaceOutlinePainter extends CustomPainter {
     final bgPaint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.3);
+      ..color = const Color.fromRGBO(0xff, 0x00, 0x00, 0.3);
 
     final bgPaint2 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
+      ..color = const Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
 
     var latticePixels = 0.1 * pixelPerMillivolt;
     var nn = 0.0;
@@ -142,10 +142,10 @@ class FaceOutlinePainter extends CustomPainter {
       ..strokeWidth = 1.0
       ..color = const Color.fromRGBO(0x24, 0x2A, 0x38, 1);
 
-    DuoEkFile duoEkFile = DuoEkFile(originalData: fileData);
-    duoEkFile.uncompress();
+    CheckmeFile checkmeFile = CheckmeFile(originalData: fileData);
+    checkmeFile.uncompress();
 
-    var pointSize = duoEkFile.waveData.length;
+    var pointSize = checkmeFile.waveData.length;
     var totalHighNumber = 0;
     if (pointSize % lineSize == 0) {
       totalHighNumber = pointSize ~/ lineSize;
@@ -157,11 +157,11 @@ class FaceOutlinePainter extends CustomPainter {
     for (int k = 0; k < totalHighNumber; k++) {
       for (int j = 0; j < lineSize; j++) {
         var index = k * lineSize + j;
-        if (index < duoEkFile.waveData.length - 1) {
+        if (index < checkmeFile.waveData.length - 1) {
           var baseH = k * pixelPerMillivolt * rangeHeightSpan +
               pixelPerMillivolt * rangeHeightSpan / 2.0;
-          var y1 = baseH - duoEkFile.waveData[index] * pixelPerMillivolt;
-          var y2 = baseH - duoEkFile.waveData[index + 1] * pixelPerMillivolt;
+          var y1 = baseH - checkmeFile.waveData[index] * pixelPerMillivolt;
+          var y2 = baseH - checkmeFile.waveData[index + 1] * pixelPerMillivolt;
           try {
             canvas.drawLine(Offset(j.toDouble() * nv, y1),
                 Offset((j + 1).toDouble() * nv, y2), wavePaint);
@@ -199,7 +199,7 @@ class FaceOutlinePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     drawEcg(canvas, size);
     //save to /storage/emulated/0/Android/data/com.vaca.canvas_flutter/files/xx.png
-    saveAsImage(canvas, size, "duoek_eck_img");
+    saveAsImage(canvas, size, "checkme_img");
   }
 
   @override

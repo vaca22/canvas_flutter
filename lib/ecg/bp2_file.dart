@@ -17,10 +17,8 @@ class Bp2File {
   }
 
   void uncompress() {
-    print(originalData.length);
     int dataPos = 48;
     var dataLength = originalData.length - 48;
-    print(originalData.length);
     List<int> temp = [];
     for (int i = 0; i < dataLength; i += 2) {
       int temp1 =
