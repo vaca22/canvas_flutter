@@ -1,4 +1,12 @@
-var lineSize = 2150;
-var rangeHeightSpan=1;
-var pixelPerMillivolt=74.283167;
-var rangeWidthSpan=5;
+class CheckmeGlobal {
+  static const pixelsPerMillivolt = 70.0;
+  static const sampleRate = 500;
+
+//each line Time consumed  (second)
+  static const eachLineTime = 4;
+
+//  1 mv  Corresponding grid
+  static const rangeHeightSpan = 1;
+  static const rangeWidthSpan = 5;
+  static const lineSize = eachLineTime * sampleRate;
+}

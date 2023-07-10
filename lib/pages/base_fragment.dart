@@ -34,8 +34,6 @@ class _MyBasePageState extends State<MyBasePage> {
 
   final List<Widget> _widgetOptions = <Widget>[
     DuoEkView(),
-    // DuoEkView(),
-    // DuoEkView(),
     CheckmeView(),
     Bp2View(),
   ];

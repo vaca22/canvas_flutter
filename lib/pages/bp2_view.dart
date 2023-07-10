@@ -22,11 +22,15 @@ void initVar() async {
   bp2File.uncompress();
   var pointSize = bp2File.waveData.length;
   var totalHigh = 0.0;
-  if (pointSize % lineSize == 0) {
-    totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
+  if (pointSize % Bp2Global.lineSize == 0) {
+    totalHigh = (pointSize ~/
+        Bp2Global.lineSize *
+        Bp2Global.rangeHeightSpan *
+        Bp2Global.pixelsPerMillivolt);
   } else {
-    totalHigh =
-        (pointSize ~/ lineSize + 1) * rangeHeightSpan * pixelPerMillivolt;
+    totalHigh = ((pointSize ~/ Bp2Global.lineSize + 1) *
+        Bp2Global.rangeHeightSpan *
+        Bp2Global.pixelsPerMillivolt);
   }
   canvasHigh = totalHigh;
 }
@@ -56,7 +60,8 @@ class Bp2View extends StatelessWidget {
                     child: Center(
                       child: SizedBox(
                         height: canvasHigh,
-                        width: rangeWidthSpan * pixelPerMillivolt,
+                        width: Bp2Global.rangeWidthSpan *
+                            Bp2Global.pixelsPerMillivolt,
                         child: CustomPaint(painter: FaceOutlinePainter()),
                       ),
                     ),
@@ -104,7 +109,7 @@ class FaceOutlinePainter extends CustomPainter {
       ..strokeWidth = 1.0
       ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
 
-    var latticePixels = 0.1 * pixelPerMillivolt;
+    var latticePixels = 0.1 * Bp2Global.pixelsPerMillivolt;
     var nn = 0.0;
 
     var step = 0;
@@ -147,21 +152,25 @@ class FaceOutlinePainter extends CustomPainter {
 
     var pointSize = bp2File.waveData.length;
     var totalHighNumber = 0;
-    if (pointSize % lineSize == 0) {
-      totalHighNumber = pointSize ~/ lineSize;
+    if (pointSize % Bp2Global.lineSize == 0) {
+      totalHighNumber = pointSize ~/ Bp2Global.lineSize;
     } else {
-      totalHighNumber = pointSize ~/ lineSize + 1;
+      totalHighNumber = pointSize ~/ Bp2Global.lineSize + 1;
     }
 
-    var nv = size.width / lineSize;
+    var nv = size.width / Bp2Global.lineSize;
     for (int k = 0; k < totalHighNumber; k++) {
-      for (int j = 0; j < lineSize; j++) {
-        var index = k * lineSize + j;
+      for (int j = 0; j < Bp2Global.lineSize; j++) {
+        var index = k * Bp2Global.lineSize + j;
         if (index < bp2File.waveData.length - 1) {
-          var baseH = k * pixelPerMillivolt * rangeHeightSpan +
-              pixelPerMillivolt * rangeHeightSpan / 2.0;
-          var y1 = baseH - bp2File.waveData[index] * pixelPerMillivolt;
-          var y2 = baseH - bp2File.waveData[index + 1] * pixelPerMillivolt;
+          var baseH = k *
+                  Bp2Global.pixelsPerMillivolt *
+                  Bp2Global.rangeHeightSpan +
+              Bp2Global.pixelsPerMillivolt * Bp2Global.rangeHeightSpan / 2.0;
+          var y1 =
+              baseH - bp2File.waveData[index] * Bp2Global.pixelsPerMillivolt;
+          var y2 = baseH -
+              bp2File.waveData[index + 1] * Bp2Global.pixelsPerMillivolt;
           try {
             canvas.drawLine(Offset(j.toDouble() * nv, y1),
                 Offset((j + 1).toDouble() * nv, y2), wavePaint);
@@ -182,7 +191,8 @@ class FaceOutlinePainter extends CustomPainter {
     drawEcg(recordCanvas, size);
     final picture = recorder.endRecording();
     final img = picture.toImage(
-        (rangeWidthSpan * pixelPerMillivolt).toInt(), canvasHigh.toInt());
+        (Bp2Global.rangeWidthSpan * Bp2Global.pixelsPerMillivolt).toInt(),
+        canvasHigh.toInt());
     Directory? dir;
     String path;
     img.then((value) => {

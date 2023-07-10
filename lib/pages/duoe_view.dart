@@ -22,11 +22,15 @@ void initVar() async {
   duoekFile.uncompress();
   var pointSize = duoekFile.waveData.length;
   var totalHigh = 0.0;
-  if (pointSize % lineSize == 0) {
-    totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
+  if (pointSize % DuoEkGlobal.lineSize == 0) {
+    totalHigh = pointSize ~/
+        DuoEkGlobal.lineSize *
+        DuoEkGlobal.rangeHeightSpan *
+        DuoEkGlobal.pixelsPerMillivolt;
   } else {
-    totalHigh =
-        (pointSize ~/ lineSize + 1) * rangeHeightSpan * pixelPerMillivolt;
+    totalHigh = (pointSize ~/ DuoEkGlobal.lineSize + 1) *
+        DuoEkGlobal.rangeHeightSpan *
+        DuoEkGlobal.pixelsPerMillivolt;
   }
   canvasHigh = totalHigh;
 }
@@ -56,7 +60,8 @@ class DuoEkView extends StatelessWidget {
                     child: Center(
                       child: SizedBox(
                         height: canvasHigh,
-                        width: rangeWidthSpan * pixelPerMillivolt,
+                        width: DuoEkGlobal.rangeWidthSpan *
+                            DuoEkGlobal.pixelsPerMillivolt,
                         child: CustomPaint(painter: FaceOutlinePainter()),
                       ),
                     ),
@@ -104,7 +109,7 @@ class FaceOutlinePainter extends CustomPainter {
       ..strokeWidth = 1.0
       ..color = Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
 
-    var latticePixels = 0.1 * pixelPerMillivolt;
+    var latticePixels = 0.1 * DuoEkGlobal.pixelsPerMillivolt;
     var nn = 0.0;
 
     var step = 0;
@@ -147,21 +152,26 @@ class FaceOutlinePainter extends CustomPainter {
 
     var pointSize = duoEkFile.waveData.length;
     var totalHighNumber = 0;
-    if (pointSize % lineSize == 0) {
-      totalHighNumber = pointSize ~/ lineSize;
+    if (pointSize % DuoEkGlobal.lineSize == 0) {
+      totalHighNumber = pointSize ~/ DuoEkGlobal.lineSize;
     } else {
-      totalHighNumber = pointSize ~/ lineSize + 1;
+      totalHighNumber = pointSize ~/ DuoEkGlobal.lineSize + 1;
     }
 
-    var nv = size.width / lineSize;
+    var nv = size.width / DuoEkGlobal.lineSize;
     for (int k = 0; k < totalHighNumber; k++) {
-      for (int j = 0; j < lineSize; j++) {
-        var index = k * lineSize + j;
+      for (int j = 0; j < DuoEkGlobal.lineSize; j++) {
+        var index = k * DuoEkGlobal.lineSize + j;
         if (index < duoEkFile.waveData.length - 1) {
-          var baseH = k * pixelPerMillivolt * rangeHeightSpan +
-              pixelPerMillivolt * rangeHeightSpan / 2.0;
-          var y1 = baseH - duoEkFile.waveData[index] * pixelPerMillivolt;
-          var y2 = baseH - duoEkFile.waveData[index + 1] * pixelPerMillivolt;
+          var baseH =
+              k * DuoEkGlobal.pixelsPerMillivolt * DuoEkGlobal.rangeHeightSpan +
+                  DuoEkGlobal.pixelsPerMillivolt *
+                      DuoEkGlobal.rangeHeightSpan /
+                      2.0;
+          var y1 = baseH -
+              duoEkFile.waveData[index] * DuoEkGlobal.pixelsPerMillivolt;
+          var y2 = baseH -
+              duoEkFile.waveData[index + 1] * DuoEkGlobal.pixelsPerMillivolt;
           try {
             canvas.drawLine(Offset(j.toDouble() * nv, y1),
                 Offset((j + 1).toDouble() * nv, y2), wavePaint);
@@ -182,7 +192,8 @@ class FaceOutlinePainter extends CustomPainter {
     drawEcg(recordCanvas, size);
     final picture = recorder.endRecording();
     final img = picture.toImage(
-        (rangeWidthSpan * pixelPerMillivolt).toInt(), canvasHigh.toInt());
+        (DuoEkGlobal.rangeWidthSpan * DuoEkGlobal.pixelsPerMillivolt).toInt(),
+        canvasHigh.toInt());
     Directory? dir;
     String path;
     img.then((value) => {

@@ -22,11 +22,15 @@ void initVar() async {
   checkmeFile.uncompress();
   var pointSize = checkmeFile.waveData.length;
   var totalHigh = 0.0;
-  if (pointSize % lineSize == 0) {
-    totalHigh = pointSize ~/ lineSize * rangeHeightSpan * pixelPerMillivolt;
+  if (pointSize % CheckmeGlobal.lineSize == 0) {
+    totalHigh = pointSize ~/
+        CheckmeGlobal.lineSize *
+        CheckmeGlobal.rangeHeightSpan *
+        CheckmeGlobal.pixelsPerMillivolt;
   } else {
-    totalHigh =
-        (pointSize ~/ lineSize + 1) * rangeHeightSpan * pixelPerMillivolt;
+    totalHigh = (pointSize ~/ CheckmeGlobal.lineSize + 1) *
+        CheckmeGlobal.rangeHeightSpan *
+        CheckmeGlobal.pixelsPerMillivolt;
   }
   canvasHigh = totalHigh;
 }
@@ -56,7 +60,8 @@ class CheckmeView extends StatelessWidget {
                     child: Center(
                       child: SizedBox(
                         height: canvasHigh,
-                        width: rangeWidthSpan * pixelPerMillivolt,
+                        width: CheckmeGlobal.rangeWidthSpan *
+                            CheckmeGlobal.pixelsPerMillivolt,
                         child: CustomPaint(painter: FaceOutlinePainter()),
                       ),
                     ),
@@ -104,7 +109,7 @@ class FaceOutlinePainter extends CustomPainter {
       ..strokeWidth = 1.0
       ..color = const Color.fromRGBO(0xff, 0x00, 0x00, 0.101);
 
-    var latticePixels = 0.1 * pixelPerMillivolt;
+    var latticePixels = 0.1 * CheckmeGlobal.pixelsPerMillivolt;
     var nn = 0.0;
 
     var step = 0;
@@ -147,21 +152,28 @@ class FaceOutlinePainter extends CustomPainter {
 
     var pointSize = checkmeFile.waveData.length;
     var totalHighNumber = 0;
-    if (pointSize % lineSize == 0) {
-      totalHighNumber = pointSize ~/ lineSize;
+    if (pointSize % CheckmeGlobal.lineSize == 0) {
+      totalHighNumber = pointSize ~/ CheckmeGlobal.lineSize;
     } else {
-      totalHighNumber = pointSize ~/ lineSize + 1;
+      totalHighNumber = pointSize ~/ CheckmeGlobal.lineSize + 1;
     }
 
-    var nv = size.width / lineSize;
+    var nv = size.width / CheckmeGlobal.lineSize;
     for (int k = 0; k < totalHighNumber; k++) {
-      for (int j = 0; j < lineSize; j++) {
-        var index = k * lineSize + j;
+      for (int j = 0; j < CheckmeGlobal.lineSize; j++) {
+        var index = k * CheckmeGlobal.lineSize + j;
         if (index < checkmeFile.waveData.length - 1) {
-          var baseH = k * pixelPerMillivolt * rangeHeightSpan +
-              pixelPerMillivolt * rangeHeightSpan / 2.0;
-          var y1 = baseH - checkmeFile.waveData[index] * pixelPerMillivolt;
-          var y2 = baseH - checkmeFile.waveData[index + 1] * pixelPerMillivolt;
+          var baseH = k *
+                  CheckmeGlobal.pixelsPerMillivolt *
+                  CheckmeGlobal.rangeHeightSpan +
+              CheckmeGlobal.pixelsPerMillivolt *
+                  CheckmeGlobal.rangeHeightSpan /
+                  2.0;
+          var y1 = baseH -
+              checkmeFile.waveData[index] * CheckmeGlobal.pixelsPerMillivolt;
+          var y2 = baseH -
+              checkmeFile.waveData[index + 1] *
+                  CheckmeGlobal.pixelsPerMillivolt;
           try {
             canvas.drawLine(Offset(j.toDouble() * nv, y1),
                 Offset((j + 1).toDouble() * nv, y2), wavePaint);
@@ -182,7 +194,9 @@ class FaceOutlinePainter extends CustomPainter {
     drawEcg(recordCanvas, size);
     final picture = recorder.endRecording();
     final img = picture.toImage(
-        (rangeWidthSpan * pixelPerMillivolt).toInt(), canvasHigh.toInt());
+        (CheckmeGlobal.rangeWidthSpan * CheckmeGlobal.pixelsPerMillivolt)
+            .toInt(),
+        canvasHigh.toInt());
     Directory? dir;
     String path;
     img.then((value) => {
