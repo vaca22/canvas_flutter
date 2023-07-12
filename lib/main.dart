@@ -34,6 +34,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size=MediaQuery.of(context).size;
+    //devicePixelRatio
+    MyScreen.devicePixelRatio=MediaQuery.of(context).devicePixelRatio;
+    print("devicePixelRatio:"+MyScreen.devicePixelRatio.toString());
     MyScreen.width=size.width;
     MyScreen.height=size.height;
     if (kDebugMode) {
