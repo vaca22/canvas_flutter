@@ -40,8 +40,11 @@ class MyApp extends StatelessWidget {
       print(size.width.toString()+" "+size.height.toString());
     }
     DuoEkGlobal.rangeWidthSpan = MyScreen.width~/DuoEkGlobal.pixelsPerMillivolt;
+    DuoEkGlobal.init();
     CheckmeGlobal.rangeWidthSpan = MyScreen.width~/CheckmeGlobal.pixelsPerMillivolt;
+    CheckmeGlobal.init();
     Bp2Global.rangeWidthSpan = MyScreen.width~/Bp2Global.pixelsPerMillivolt;
+    Bp2Global.init();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
