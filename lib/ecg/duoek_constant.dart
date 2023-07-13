@@ -1,6 +1,6 @@
 class DuoEkGlobal {
   //   1 cm = 38 logical pixels
-  static const pixelsPerMillimeter = 5.75;
+  static const pixelsPerMillimeter = 3.8;
 
   //run speed 12.5mm/s
   static const speed = 12.5;
@@ -14,10 +14,12 @@ class DuoEkGlobal {
   static var rangeWidthSpan = 5;
 
   static void init() {
-     eachLineTime = rangeWidthSpan*pixelsPerMillivolt/pixelsPerMillimeter/speed;
-     lineSize = (eachLineTime * sampleRate).toInt();
+    eachLineTime =
+        rangeWidthSpan * pixelsPerMillivolt / pixelsPerMillimeter / speed;
+    lineSize = (eachLineTime * sampleRate).toInt();
   }
 
-  static var eachLineTime = rangeWidthSpan*pixelsPerMillivolt/pixelsPerMillimeter/speed;
+  static var eachLineTime =
+      rangeWidthSpan * pixelsPerMillivolt / pixelsPerMillimeter / speed;
   static var lineSize = (eachLineTime * sampleRate).toInt();
 }

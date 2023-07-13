@@ -1,17 +1,16 @@
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:canvas_flutter/app_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 
+import '../app_utils.dart';
 import '../ecg/duoek_constant.dart';
 import '../ecg/duoek_file.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
+late Uint8List saveFileData;
 var canvasHigh = 0.0;
 late Future initFile;
 
@@ -53,37 +52,48 @@ class DuoEkView extends StatelessWidget {
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
           child: SingleChildScrollView(
-            child: FutureBuilder(
-              future: initFile,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> value) {
-                if (value.connectionState == ConnectionState.done) {
-                  return RepaintBoundary(
-                    child: Center(
-                      child: SizedBox(
-                        height: canvasHigh,
-                        width: DuoEkGlobal.rangeWidthSpan *
-                            DuoEkGlobal.pixelsPerMillivolt,
-                        child: CustomPaint(painter: FaceOutlinePainter()),
-                      ),
-                    ),
-                  );
-                } else {
-                  return SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: Center(
-                          child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.amber),
-                        child: const CircularProgressIndicator(
-                          color: Colors.red,
-                          strokeWidth: 20,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      onPressed: () => {AppUtil.saveImage(saveFileData)},
+                      child: Text("Save")),
+                ),
+                FutureBuilder(
+                  future: initFile,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> value) {
+                    if (value.connectionState == ConnectionState.done) {
+                      return RepaintBoundary(
+                        child: Center(
+                          child: SizedBox(
+                            height: canvasHigh,
+                            width: DuoEkGlobal.rangeWidthSpan *
+                                DuoEkGlobal.pixelsPerMillivolt,
+                            child: CustomPaint(painter: FaceOutlinePainter()),
+                          ),
                         ),
-                      )));
-                }
-              },
+                      );
+                    } else {
+                      return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          child: Center(
+                              child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle, color: Colors.amber),
+                            child: const CircularProgressIndicator(
+                              color: Colors.red,
+                              strokeWidth: 20,
+                            ),
+                          )));
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -192,20 +202,21 @@ class FaceOutlinePainter extends CustomPainter {
 
     //draw a path
     var path = Path();
-    var baseH = DuoEkGlobal.rangeHeightSpan* DuoEkGlobal.pixelsPerMillivolt/2;
+    var baseH =
+        DuoEkGlobal.rangeHeightSpan * DuoEkGlobal.pixelsPerMillivolt / 2;
     var x1 = 25.0;
     var x2 = 30.0;
     path.moveTo(0, baseH);
     path.lineTo(x1, baseH);
     path.lineTo(x1, baseH - DuoEkGlobal.pixelsPerMillivolt);
-    path.lineTo(x1+x2, baseH - DuoEkGlobal.pixelsPerMillivolt);
-    path.lineTo(x1+x2, baseH);
-    path.lineTo(x1*2+x2, baseH);
+    path.lineTo(x1 + x2, baseH - DuoEkGlobal.pixelsPerMillivolt);
+    path.lineTo(x1 + x2, baseH);
+    path.lineTo(x1 * 2 + x2, baseH);
     canvas.drawPath(path, linePaint);
     //draw text "1mV" to canvas
 
     const textSpan = TextSpan(
-      text: "1mV",
+      text: "1mV       12.5mm/s",
       style: TextStyle(
         color: Color.fromRGBO(0xbc, 0xbc, 0xbc, 1),
         fontSize: 15,
@@ -216,10 +227,10 @@ class FaceOutlinePainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(x1+x2, baseH +25));
+    textPainter.paint(canvas, Offset(x1 + x2, baseH + 25));
   }
 
-  void saveAsImage(Canvas canvas, Size size, String name) {
+  void saveAsImage(Canvas canvas, Size size) {
     final recorder = PictureRecorder();
     final recordCanvas =
         Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
@@ -228,12 +239,9 @@ class FaceOutlinePainter extends CustomPainter {
     final img = picture.toImage(
         (DuoEkGlobal.rangeWidthSpan * DuoEkGlobal.pixelsPerMillivolt).toInt(),
         canvasHigh.toInt());
-    Directory? dir;
-    String path;
     img.then((value) => {
           value.toByteData(format: ImageByteFormat.png).then((value) async => {
-                fileData = value!.buffer.asUint8List(),
-            AppUtil.saveImage(fileData)
+                saveFileData = value!.buffer.asUint8List(),
               }),
         });
   }
@@ -241,7 +249,7 @@ class FaceOutlinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     drawEcg(canvas, size);
-    saveAsImage(canvas, size, "duoek_eck_img");
+    saveAsImage(canvas, size);
   }
 
   @override

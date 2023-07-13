@@ -5,13 +5,13 @@ import 'package:canvas_flutter/ecg/checkme_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 
 import '../app_utils.dart';
 import '../ecg/checkme_constant.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 late Uint8List fileData;
+late Uint8List saveFileData;
 var canvasHigh = 0.0;
 late Future initFile;
 
@@ -53,37 +53,48 @@ class CheckmeView extends StatelessWidget {
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
           child: SingleChildScrollView(
-            child: FutureBuilder(
-              future: initFile,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> value) {
-                if (value.connectionState == ConnectionState.done) {
-                  return RepaintBoundary(
-                    child: Center(
-                      child: SizedBox(
-                        height: canvasHigh,
-                        width: CheckmeGlobal.rangeWidthSpan *
-                            CheckmeGlobal.pixelsPerMillivolt,
-                        child: CustomPaint(painter: FaceOutlinePainter()),
-                      ),
-                    ),
-                  );
-                } else {
-                  return SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: Center(
-                          child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.amber),
-                        child: const CircularProgressIndicator(
-                          color: Colors.red,
-                          strokeWidth: 20,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      onPressed: () => {AppUtil.saveImage(saveFileData)},
+                      child: Text("Save")),
+                ),
+                FutureBuilder(
+                  future: initFile,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> value) {
+                    if (value.connectionState == ConnectionState.done) {
+                      return RepaintBoundary(
+                        child: Center(
+                          child: SizedBox(
+                            height: canvasHigh,
+                            width: CheckmeGlobal.rangeWidthSpan *
+                                CheckmeGlobal.pixelsPerMillivolt,
+                            child: CustomPaint(painter: FaceOutlinePainter()),
+                          ),
                         ),
-                      )));
-                }
-              },
+                      );
+                    } else {
+                      return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          child: Center(
+                              child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle, color: Colors.amber),
+                            child: const CircularProgressIndicator(
+                              color: Colors.red,
+                              strokeWidth: 20,
+                            ),
+                          )));
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -187,28 +198,27 @@ class FaceOutlinePainter extends CustomPainter {
       }
     }
 
-
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
       ..color = const Color.fromRGBO(0xcc, 0xcc, 0xcc, 1);
 
-
     var path = Path();
-    var baseH = CheckmeGlobal.rangeHeightSpan* CheckmeGlobal.pixelsPerMillivolt/2;
+    var baseH =
+        CheckmeGlobal.rangeHeightSpan * CheckmeGlobal.pixelsPerMillivolt / 2;
     var x1 = 25.0;
     var x2 = 30.0;
     path.moveTo(0, baseH);
     path.lineTo(x1, baseH);
     path.lineTo(x1, baseH - CheckmeGlobal.pixelsPerMillivolt);
-    path.lineTo(x1+x2, baseH - CheckmeGlobal.pixelsPerMillivolt);
-    path.lineTo(x1+x2, baseH);
-    path.lineTo(x1*2+x2, baseH);
+    path.lineTo(x1 + x2, baseH - CheckmeGlobal.pixelsPerMillivolt);
+    path.lineTo(x1 + x2, baseH);
+    path.lineTo(x1 * 2 + x2, baseH);
     canvas.drawPath(path, linePaint);
     //draw text "1mV" to canvas
 
     const textSpan = TextSpan(
-      text: "1mV",
+      text: "1mV       12.5mm/s",
       style: TextStyle(
         color: Color.fromRGBO(0xbc, 0xbc, 0xbc, 1),
         fontSize: 15,
@@ -219,7 +229,7 @@ class FaceOutlinePainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(x1+x2, baseH +25));
+    textPainter.paint(canvas, Offset(x1 + x2, baseH + 25));
   }
 
   void saveAsImage(Canvas canvas, Size size, String name) {
@@ -236,8 +246,7 @@ class FaceOutlinePainter extends CustomPainter {
     String path;
     img.then((value) => {
           value.toByteData(format: ImageByteFormat.png).then((value) async => {
-                fileData = value!.buffer.asUint8List(),
-            AppUtil.saveImage(fileData)
+                saveFileData = value!.buffer.asUint8List(),
               }),
         });
   }
